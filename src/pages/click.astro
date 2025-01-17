@@ -1,0 +1,62 @@
+---
+import BaseLayout from "src/layouts/BaseLayout.astro";
+import CTA from "@components/CTA.astro";
+import Landing from "@components/Landing.astro";
+import FAQ from "@components/FAQ.astro";
+
+// Optimize our landing image and pass it as props to the BaseLayout (for preloading) and Landing (for rendering)
+import {getOptimizedImage} from "@js/utils"
+import landingImage from "@assets/images/landing.jpg" // <-- THE PATH TO THE ASSET YOU WANT TO PRELOAD - The asset must live in src
+const optimizedImage = await getOptimizedImage(landingImage)
+---
+
+<BaseLayout
+  title="About"
+  description="Meta description for the page"
+  preloadedImage = {optimizedImage}
+>
+  <!-- ============================================ -->
+  <!--                    LANDING                   -->
+  <!-- ============================================ -->
+
+  <Landing 
+    title="About Us"
+    image={optimizedImage}
+
+    <html>
+  <head>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <button id="checkout-button">Checkout</button>
+
+    <script>
+      var stripe = Stripe('pk_live_51QiBAFG2jw91QJppkmaAjS2547nRWKu2oo0L4UQL0BzbOGwYJ79q5vI52TRrhXt5EZvIYQ2vwnR0BpnFub53fyTJ008iNWYfFc'); // Replace with your actual Stripe publishable key
+      var checkoutButton = document.getElementById('checkout-button');
+    
+      checkoutButton.addEventListener('click', function () {
+        fetch('/create-checkout-session', {
+          method: 'POST',
+        })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (sessionId) {
+          return stripe.redirectToCheckout({ sessionId: sessionId.id });
+        })
+        .then(function (result) {
+          if (result.error) {
+            alert(result.error.message);
+          }
+        })
+        .catch(function (error) {
+          console.error('Error:', error);
+        });
+      });
+    </script>
+  </body>
+</html>
+  />
+
+ 
+ 
